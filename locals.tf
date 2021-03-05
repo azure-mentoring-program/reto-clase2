@@ -1,7 +1,7 @@
 locals {
   location = "Brazil South"
-  rg_dev = "gp-dev-rg"
-  rg_prd = "gp-prd-rg"
-  dev_enviroment = "dev"
-  prd_enviroment = "prd"
+  rg-dev = "gp-dev-rg"
+  rg-prd = "gp-prd-rg"
+  dev-enviroment = "dev"
+  prd-enviroment = "prd"
 }
