@@ -6,19 +6,19 @@ provider "azurerm" {
 ### ---------- RESOURCE GROUP ---------------
 
 resource "azurerm_resource_group" "rgfrontend" {
-  name     = "rg-frontend"
+  name     = "team4-rg-frontend"
   location = local.location
 }
 
 resource "azurerm_resource_group" "rgbackend" {
-  name     = "rg-backend"
+  name     = "team4-rg-backend"
   location = local.location
 }
 
 ### ---------- APP PLAN ---------------
 
 resource "azurerm_app_service_plan" "planfrontend" {
-  name                = "plan-frontend"
+  name                = "team4-plan-frontend"
   location            = local.location
   resource_group_name = azurerm_resource_group.rgfrontend.name
 
@@ -29,7 +29,7 @@ resource "azurerm_app_service_plan" "planfrontend" {
 }
 
 resource "azurerm_app_service_plan" "planbackend" {
-  name                = "plan-backend"
+  name                = "team4-plan-backend"
   location            = local.location
   resource_group_name = azurerm_resource_group.rgbackend.name
 
@@ -42,14 +42,14 @@ resource "azurerm_app_service_plan" "planbackend" {
 ### ---------- APP WEB ---------------
 
 resource "azurerm_app_service" "appfrontend" {
-  name                = "web-frontend"
+  name                = "team4-web-frontend"
   location            = local.location
   resource_group_name = azurerm_resource_group.rgfrontend.name
   app_service_plan_id = azurerm_app_service_plan.planfrontend.id
 }
 
 resource "azurerm_app_service" "appbackend" {
-  name                = "web-backend"
+  name                = "team4-web-backend"
   location            = local.location
   resource_group_name = azurerm_resource_group.rgbackend.name
   app_service_plan_id = azurerm_app_service_plan.planbackend.id
@@ -59,14 +59,14 @@ resource "azurerm_app_service" "appbackend" {
 ### ---------- CDN ---------------
 
 resource "azurerm_cdn_profile" "cdnprofile" {
-  name                = "cdn-profile"
+  name                = "team4-cdn-profile"
   location            = local.location
   resource_group_name = azurerm_resource_group.rgfrontend.name
   sku                 = "Standard_Verizon"
 }
 
 resource "azurerm_cdn_endpoint" "cdnendpoint" {
-  name                = "cdn-endpoint"
+  name                = "team4-cdn-endpoint"
   profile_name        = azurerm_cdn_profile.cdnprofile.name
   location            = local.location
   resource_group_name = azurerm_resource_group.rgfrontend.name
@@ -80,7 +80,7 @@ resource "azurerm_cdn_endpoint" "cdnendpoint" {
 ### ---------- SERVICEBUS ---------------
 
 resource "azurerm_servicebus_namespace" "servicebus" {
-  name                = "servicebus-namespace"
+  name                = "team4-servicebus-namespace"
   location            = local.location
   resource_group_name = azurerm_resource_group.rgbackend.name
   sku                 = "Standard"
@@ -91,7 +91,7 @@ resource "azurerm_servicebus_namespace" "servicebus" {
 }
 
 resource "azurerm_servicebus_queue" "servicebusqueue" {
-  name                = "servicebus-queue"
+  name                = "team4-servicebus-queue"
   resource_group_name = azurerm_resource_group.rgbackend.name
   namespace_name      = azurerm_servicebus_namespace.servicebus.name
 
@@ -101,7 +101,7 @@ resource "azurerm_servicebus_queue" "servicebusqueue" {
 ### ---------- COSMOSDB ---------------
 
 resource "azurerm_storage_account" "storageaccount" {
-  name                     = "storageaccount"
+  name                     = "team4-storageaccount"
   resource_group_name      = azurerm_resource_group.rgbackend.name
   location                 = local.location
   account_tier             = "Standard"
@@ -109,7 +109,7 @@ resource "azurerm_storage_account" "storageaccount" {
 }
 
 resource  "azurerm_cosmosdb_account" "cosmosdbaccount" {
-  name                = "cosmosdb"
+  name                = "team4-cosmosdb"
   resource_group_name = azurerm_resource_group.rgbackend.name
   location            = local.location
   offer_type          = "Standard"
@@ -125,13 +125,13 @@ resource  "azurerm_cosmosdb_account" "cosmosdbaccount" {
 }
 
 resource "azurerm_cosmosdb_mongo_database" "mongodb" {
-  name                = "mongodb"
+  name                = "team4-mongodb"
   resource_group_name = azurerm_resource_group.rgbackend.name
   account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
 }
 
 resource "azurerm_cosmosdb_mongo_collection" "collection" {
-  name                = "collection"
+  name                = "team4-collection"
   resource_group_name = azurerm_resource_group.rgbackend.name
   account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodb.name
