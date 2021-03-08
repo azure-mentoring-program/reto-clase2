@@ -20,7 +20,7 @@ resource "azurerm_resource_group" "rgbackend" {
 resource "azurerm_app_service_plan" "planfrontend" {
   name                = "plan-frontend"
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgfrontend.name}"
+  resource_group_name = azurerm_resource_group.rgfrontend.name
 
   sku {
     tier = "Standard"
@@ -31,7 +31,7 @@ resource "azurerm_app_service_plan" "planfrontend" {
 resource "azurerm_app_service_plan" "planbackend" {
   name                = "plan-backend"
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgbackend.name}"
+  resource_group_name = azurerm_resource_group.rgbackend.name
 
   sku {
     tier = "Standard"
@@ -44,8 +44,8 @@ resource "azurerm_app_service_plan" "planbackend" {
 resource "azurerm_app_service" "appfrontend" {
   name                = "web-frontend"
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgfrontend.name}"
-  app_service_plan_id = "${azurerm_app_service_plan.planfrontend.id}"
+  resource_group_name = azurerm_resource_group.rgfrontend.name
+  app_service_plan_id = azurerm_app_service_plan.planfrontend.id
 }
 
 resource "azurerm_app_service" "appbackend" {
@@ -59,7 +59,7 @@ resource "azurerm_app_service" "appbackend" {
 ### ---------- CDN ---------------
 
 resource "azurerm_cdn_profile" "cdnprofile" {
-  name                = "cdn"
+  name                = "cdn-profile"
   location            = local.location
   resource_group_name = azurerm_resource_group.rgfrontend.name
   sku                 = "Standard_Verizon"
