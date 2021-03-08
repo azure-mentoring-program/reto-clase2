@@ -49,10 +49,10 @@ resource "azurerm_app_service" "appfrontend" {
 }
 
 resource "azurerm_app_service" "appbackend" {
-  name                = "eweb-backend"
+  name                = "web-backend"
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgbackend.name}"
-  app_service_plan_id = "${azurerm_app_service_plan.planbackend.id}"
+  resource_group_name = azurerm_resource_group.rgbackend.name
+  app_service_plan_id = azurerm_app_service_plan.planbackend.id
 }
 
 
@@ -65,8 +65,8 @@ resource "azurerm_cdn_profile" "cdnprofile" {
   sku                 = "Standard_Verizon"
 }
 
-resource "azurerm_cdn_endpoint" "example" {
-  name                = "example"
+resource "azurerm_cdn_endpoint" "cdnendpoint" {
+  name                = "cdn-endpoint"
   profile_name        = azurerm_cdn_profile.cdnprofile.name
   location            = local.location
   resource_group_name = azurerm_resource_group.rgfrontend.name
@@ -75,4 +75,25 @@ resource "azurerm_cdn_endpoint" "example" {
     name      = "cdng4instagram"
     host_name = "www.cdng4instagram.com"
   }
+}
+
+### ---------- SERVICEBUS ---------------
+
+resource "azurerm_servicebus_namespace" "servicebus" {
+  name                = "servicebus-namespace"
+  location            = local.location
+  resource_group_name = azurerm_resource_group.rgbackend.name
+  sku                 = "Standard"
+
+  tags = {
+    # source = "terraform"
+  }
+}
+
+resource "azurerm_servicebus_queue" "servicebusqueue" {
+  name                = "servicebus-queue"
+  resource_group_name = azurerm_resource_group.rgbackend.name
+  namespace_name      = azurerm_servicebus_namespace.servicebus.name
+
+  enable_partitioning = true
 }
