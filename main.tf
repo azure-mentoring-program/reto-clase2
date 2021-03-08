@@ -3,20 +3,24 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "rgdev" {
-  name     = local.rg-dev
+### ---------- RESOURCE GROUP ---------------
+
+resource "azurerm_resource_group" "rgfrontend" {
+  name     = "rg-frontend"
   location = local.location
 }
 
-resource "azurerm_resource_group" "rgprd" {
-  name     = local.rg-prd
+resource "azurerm_resource_group" "rgbackend" {
+  name     = "rg-backend"
   location = local.location
 }
 
-resource "azurerm_app_service_plan" "plandev" {
-  name                = "gestion${local.dev-enviroment}plan"
+### ---------- APP PLAN ---------------
+
+resource "azurerm_app_service_plan" "planfrontend" {
+  name                = "plan-frontend"
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgdev.name}"
+  resource_group_name = "${azurerm_resource_group.rgfrontend.name}"
 
   sku {
     tier = "Standard"
@@ -24,10 +28,10 @@ resource "azurerm_app_service_plan" "plandev" {
   }
 }
 
-resource "azurerm_app_service_plan" "planprd" {
-  name                = "gestion${local.prd-enviroment}plan"
+resource "azurerm_app_service_plan" "planbackend" {
+  name                = "plan-backend"
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgprd.name}"
+  resource_group_name = "${azurerm_resource_group.rgbackend.name}"
 
   sku {
     tier = "Standard"
@@ -35,44 +39,40 @@ resource "azurerm_app_service_plan" "planprd" {
   }
 }
 
-resource "azurerm_app_service" "web_dev" {
-  name                = "gestion${local.dev-enviroment}web"
+### ---------- APP WEB ---------------
+
+resource "azurerm_app_service" "appfrontend" {
+  name                = "web-frontend"
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgdev.name}"
-  app_service_plan_id = "${azurerm_app_service_plan.plandev.id}"
+  resource_group_name = "${azurerm_resource_group.rgfrontend.name}"
+  app_service_plan_id = "${azurerm_app_service_plan.planfrontend.id}"
 }
 
-resource "azurerm_app_service" "web_prd" {
-  name                = "gestion${local.prd-enviroment}web"
+resource "azurerm_app_service" "appbackend" {
+  name                = "eweb-backend"
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgprd.name}"
-  app_service_plan_id = "${azurerm_app_service_plan.planprd.id}"
+  resource_group_name = "${azurerm_resource_group.rgbackend.name}"
+  app_service_plan_id = "${azurerm_app_service_plan.planbackend.id}"
 }
 
-resource "azurerm_virtual_network" "dev" {
-  name                = "devvnet"
-  address_space       = ["10.0.0.0/16"]
+
+### ---------- CDN ---------------
+
+resource "azurerm_cdn_profile" "cdnprofile" {
+  name                = "cdn"
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgdev.name}"
+  resource_group_name = azurerm_resource_group.rgfrontend.name
+  sku                 = "Standard_Verizon"
 }
 
-resource "azurerm_subnet" "dev" {
-  name                 = "AzureFirewallDevSubnet"
-  resource_group_name  = "${azurerm_resource_group.rgdev.name}"
-  virtual_network_name = azurerm_virtual_network.dev.name
-  address_prefixes     = ["10.0.1.0/24"]
-}
-
-resource "azurerm_virtual_network" "prd" {
-  name                = "prdvnet"
-  address_space       = ["10.0.0.0/16"]
+resource "azurerm_cdn_endpoint" "example" {
+  name                = "example"
+  profile_name        = azurerm_cdn_profile.cdnprofile.name
   location            = local.location
-  resource_group_name = "${azurerm_resource_group.rgprd.name}"
-}
+  resource_group_name = azurerm_resource_group.rgfrontend.name
 
-resource "azurerm_subnet" "prd" {
-  name                 = "AzureFirewallPrdSubnet"
-  resource_group_name  = "${azurerm_resource_group.rgprd.name}"
-  virtual_network_name = azurerm_virtual_network.prd.name
-  address_prefixes     = ["10.0.1.0/24"]
+  origin {
+    name      = "cdng4instagram"
+    host_name = "www.cdng4instagram.com"
+  }
 }
