@@ -61,7 +61,7 @@ resource "azurerm_app_service" "appbackend" {
 resource "azurerm_cdn_profile" "cdnprofile" {
   name                = "cdn"
   location            = local.location
-  resource_group_name = azurerm_resource_group.rgfrontend.name
+  resource_group_name = "${azurerm_resource_group.rgfrontend.name}"
   sku                 = "Standard_Verizon"
 }
 
@@ -69,7 +69,7 @@ resource "azurerm_cdn_endpoint" "cdnendpoint" {
   name                = "cdn-endpoint"
   profile_name        = azurerm_cdn_profile.cdnprofile.name
   location            = local.location
-  resource_group_name = azurerm_resource_group.rgfrontend.name
+  resource_group_name = "${azurerm_resource_group.rgfrontend.name}"
 
   origin {
     name      = "cdng4instagram"
@@ -82,7 +82,7 @@ resource "azurerm_cdn_endpoint" "cdnendpoint" {
 resource "azurerm_servicebus_namespace" "servicebus" {
   name                = "servicebus-namespace"
   location            = local.location
-  resource_group_name = azurerm_resource_group.rgbackend.name
+  resource_group_name = "${azurerm_resource_group.rgbackend.name}"
   sku                 = "Standard"
 
   tags = {
@@ -92,8 +92,8 @@ resource "azurerm_servicebus_namespace" "servicebus" {
 
 resource "azurerm_servicebus_queue" "servicebusqueue" {
   name                = "servicebus-queue"
-  resource_group_name = azurerm_resource_group.rgbackend.name
-  namespace_name      = azurerm_servicebus_namespace.servicebus.name
+  resource_group_name = "${azurerm_resource_group.rgbackend.name}"
+  namespace_name      = "${azurerm_servicebus_namespace.servicebus.name}"
 
   enable_partitioning = true
 }
