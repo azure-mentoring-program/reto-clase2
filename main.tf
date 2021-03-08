@@ -97,3 +97,45 @@ resource "azurerm_servicebus_queue" "servicebusqueue" {
 
   enable_partitioning = true
 }
+
+### ---------- COSMOSDB ---------------
+
+resource "azurerm_storage_account" "storageaccount" {
+  name                     = "storageaccount"
+  resource_group_name      = azurerm_resource_group.rgbackend.name
+  location                 = local.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+resource  "azurerm_cosmosdb_account" "cosmosdbaccount" {
+  name                = "cosmosdb"
+  resource_group_name = azurerm_resource_group.rgbackend.name
+  location            = local.location
+  offer_type          = "Standard"
+  consistency_policy {
+    consistency_level       = "BoundedStaleness"
+    max_interval_in_seconds = 10
+    max_staleness_prefix    = 200
+  }
+  geo_location {
+    location          = local.location
+    failover_priority = 0
+  }
+}
+
+resource "azurerm_cosmosdb_mongo_database" "mongodb" {
+  name                = "mongodb"
+  resource_group_name = azurerm_resource_group.rgbackend.name
+  account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
+}
+
+resource "azurerm_cosmosdb_mongo_collection" "collection" {
+  name                = "collection"
+  resource_group_name = azurerm_resource_group.rgbackend.name
+  account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
+  database_name       = azurerm_cosmosdb_mongo_database.mongodb.name
+  default_ttl_seconds = "777"
+  shard_key           = "uniqueKey"
+  throughput          = 400
+}
