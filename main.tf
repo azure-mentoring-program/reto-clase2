@@ -124,18 +124,18 @@ resource  "azurerm_cosmosdb_account" "cosmosdbaccount" {
   }
 }
 
-resource "azurerm_cosmosdb_mongo_database" "mongodb" {
-  name                = "team4-mongodb"
-  resource_group_name = azurerm_resource_group.rgbackend.name
-  account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
-}
+# resource "azurerm_cosmosdb_mongo_database" "mongodb" {
+#   name                = "team4-mongodb"
+#   resource_group_name = azurerm_resource_group.rgbackend.name
+#   account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
+# }
 
-resource "azurerm_cosmosdb_mongo_collection" "collection" {
-  name                = "team4-collection"
-  resource_group_name = azurerm_resource_group.rgbackend.name
-  account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
-  database_name       = azurerm_cosmosdb_mongo_database.mongodb.name
-  default_ttl_seconds = "777"
-  shard_key           = "uniqueKey"
-  throughput          = 400
-}
+# resource "azurerm_cosmosdb_mongo_collection" "collection" {
+#   name                = "team4-collection"
+#   resource_group_name = azurerm_resource_group.rgbackend.name
+#   account_name        = azurerm_cosmosdb_account.cosmosdbaccount.name
+#   database_name       = azurerm_cosmosdb_mongo_database.mongodb.name
+#   default_ttl_seconds = "777"
+#   shard_key           = "uniqueKey"
+#   throughput          = 400
+# }
