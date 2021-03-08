@@ -101,7 +101,7 @@ resource "azurerm_servicebus_queue" "servicebusqueue" {
 ### ---------- COSMOSDB ---------------
 
 resource "azurerm_storage_account" "storageaccount" {
-  name                     = "team4class2storageaccount"
+  name                     = "t4c2storageaccountt4c2"
   resource_group_name      = azurerm_resource_group.rgbackend.name
   location                 = local.location
   account_tier             = "Standard"
